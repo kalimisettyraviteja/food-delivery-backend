@@ -1,0 +1,39 @@
+package com.fooddelivery.restaurantservice.controller;
+
+import com.fooddelivery.restaurantservice.entity.MenuItem;
+import com.fooddelivery.restaurantservice.entity.Restaurant;
+import com.fooddelivery.restaurantservice.service.RestaurantService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/restaurants")
+public class RestaurantController {
+
+    private final RestaurantService restaurantService;
+
+    public RestaurantController(RestaurantService restaurantService) {
+        this.restaurantService = restaurantService;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Restaurant>> searchRestaurants(
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) String cuisine) {
+        return ResponseEntity.ok(
+                restaurantService.searchRestaurants(location, cuisine)
+        );
+    }
+
+    // View Menu (+ veg filter)
+    @GetMapping("/{restaurantId}/menu")
+    public ResponseEntity<List<MenuItem>> getMenu(
+            @PathVariable Long restaurantId,
+            @RequestParam(required = false) Boolean veg) {
+        return ResponseEntity.ok(
+                restaurantService.getMenuForRestaurant(restaurantId, veg)
+        );
+    }
+}

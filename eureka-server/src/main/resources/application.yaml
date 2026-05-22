@@ -1,0 +1,20 @@
+server:
+  port: 8761
+
+spring:
+  application:
+    name: eureka-server
+
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+  server:
+    wait-time-in-ms-when-sync-empty: 0
+
+#  Why these settings?
+#
+#port: 8761 — standard Eureka port
+#register-with-eureka: false — Eureka server should NOT register itself as a client
+#fetch-registry: false — it doesn't need to fetch registry from itself
+#wait-time-in-ms-when-sync-empty: 0 — starts immediately without waiting
