@@ -1,5 +1,6 @@
 package com.fooddelivery.userservice.service;
 
+import com.fooddelivery.userservice.config.JwtUtil;
 import com.fooddelivery.userservice.dto.LoginRequest;
 import com.fooddelivery.userservice.dto.LoginResponse;
 import com.fooddelivery.userservice.dto.RegisterRequest;
@@ -16,10 +17,13 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
@@ -58,11 +62,14 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {  // ✅ fixed
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid password");
         }
 
-        return new LoginResponse(user.getId(), user.getName(), user.getEmail(), user.getRole());
+        String token = jwtUtil.generateToken(user.getEmail(), user.getRole());
+
+
+        return new LoginResponse(user.getId(), user.getName(), user.getEmail(), user.getRole(),token);
     }
 
     @Override
