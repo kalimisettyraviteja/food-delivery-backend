@@ -1,7 +1,10 @@
 package com.fooddelivery.restaurantservice.service;
 
+import com.fooddelivery.restaurantservice.dto.MenuItemResponse;
+import com.fooddelivery.restaurantservice.dto.RestaurantResponse;
 import com.fooddelivery.restaurantservice.entity.MenuItem;
 import com.fooddelivery.restaurantservice.entity.Restaurant;
+import com.fooddelivery.restaurantservice.exception.ResourceNotFoundException;
 import com.fooddelivery.restaurantservice.repository.MenuItemRepository;
 import com.fooddelivery.restaurantservice.repository.RestaurantRepository;
 import org.springframework.stereotype.Service;
@@ -20,22 +23,61 @@ public class RestaurantServiceImpl implements RestaurantService {
         this.menuItemRepository = menuItemRepository;
     }
 
+
     @Override
-    public List<Restaurant> searchRestaurants(String location, String cuisine) {
+    public List<RestaurantResponse> searchRestaurants(String location, String cuisine) {
         String loc = (location == null || location.isBlank()) ? "" : location;
         String cui = (cuisine == null || cuisine.isBlank()) ? "" : cuisine;
+
         return restaurantRepository
-                .findByLocationContainingIgnoreCaseAndCuisineContainingIgnoreCase(loc, cui);
+                .findByLocationContainingIgnoreCaseAndCuisineContainingIgnoreCase(loc, cui)
+                .stream()
+                .map(this::mapToRestaurantResponse)
+                .toList();
     }
+
 
     @Override
-    public List<MenuItem> getMenuForRestaurant(Long restaurantId, Boolean vegOnly) {
+    public List<MenuItemResponse> getAvailableMenuForRestaurant(Long restaurantId, Boolean vegOnly) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new RuntimeException("Restaurant not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found"));
+
+        List<MenuItem> items;
 
         if (vegOnly == null) {
-            return menuItemRepository.findByRestaurant(restaurant);
+            items = menuItemRepository.findByRestaurantAndIsAvailableTrue(restaurant);
+        } else {
+            items = menuItemRepository.findByRestaurantAndIsAvailableTrueAndVeg(restaurant, vegOnly);
         }
-        return menuItemRepository.findByRestaurantAndVeg(restaurant, vegOnly);
+
+        return items.stream()
+                .map(this::mapToMenuItemResponse)
+                .toList();
     }
+
+    private RestaurantResponse mapToRestaurantResponse(Restaurant r) {
+        return RestaurantResponse.builder()
+                .id(r.getId())
+                .name(r.getName())
+                .location(r.getLocation())
+                .cuisine(r.getCuisine())
+                .rating(r.getRating())
+                .deliveryTime(r.getDeliveryTime())
+                .isActive(r.getIsActive())
+                .build();
+    }
+
+    private MenuItemResponse mapToMenuItemResponse(MenuItem m) {
+        return MenuItemResponse.builder()
+                .id(m.getId())
+                .restaurantId(m.getRestaurant().getId())
+                .name(m.getName())
+                .description(m.getDescription())
+                .price(m.getPrice())
+                .image(m.getImage())
+                .veg(m.getVeg())
+                .isAvailable(m.getIsAvailable())
+                .build();
+    }
+
 }

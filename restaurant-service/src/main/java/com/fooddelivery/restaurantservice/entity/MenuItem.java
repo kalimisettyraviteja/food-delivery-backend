@@ -28,8 +28,13 @@ public class MenuItem {
     @Column(nullable = false)
     private Double price;
 
-    private String imageUrl;
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
+    private String image;
 
     @Column(nullable = false)
     private Boolean veg;
+
+    @Column(nullable = false)
+    private Boolean isAvailable = true;
 }

@@ -8,9 +8,12 @@ import java.util.Optional;
 
 public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
 
+    Optional<Restaurant> findByNameIgnoreCaseAndLocationIgnoreCase(String name, String location);
+
     List<Restaurant> findByLocationContainingIgnoreCaseAndCuisineContainingIgnoreCase(
             String location, String cuisine);
 
-    Optional<Restaurant> findByNameIgnoreCaseAndLocationIgnoreCase(String name, String location);
+    List<Restaurant> findByIsActiveTrueAndLocationContainingIgnoreCaseAndCuisineContainingIgnoreCase(
+            String location, String cuisine);
 
 }

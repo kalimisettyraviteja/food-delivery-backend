@@ -1,13 +1,12 @@
 package com.fooddelivery.restaurantservice.service;
-
-import com.fooddelivery.restaurantservice.entity.MenuItem;
-import com.fooddelivery.restaurantservice.entity.Restaurant;
+import com.fooddelivery.restaurantservice.dto.MenuItemResponse;
+import com.fooddelivery.restaurantservice.dto.RestaurantResponse;
 
 import java.util.List;
 
 public interface RestaurantService {
 
-    List<Restaurant> searchRestaurants(String location, String cuisine);
+    List<RestaurantResponse> searchRestaurants (String location, String cuisine);
 
-    List<MenuItem> getMenuForRestaurant(Long restaurantId, Boolean vegOnly);
+    List<MenuItemResponse> getAvailableMenuForRestaurant(Long restaurantId, Boolean vegOnly);
 }

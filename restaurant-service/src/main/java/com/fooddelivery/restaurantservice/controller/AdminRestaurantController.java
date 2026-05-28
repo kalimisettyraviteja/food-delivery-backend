@@ -1,13 +1,16 @@
 package com.fooddelivery.restaurantservice.controller;
 
+import com.fooddelivery.restaurantservice.dto.MenuItemRequest;
+import com.fooddelivery.restaurantservice.dto.MenuItemResponse;
+import com.fooddelivery.restaurantservice.dto.RestaurantRequest;
+import com.fooddelivery.restaurantservice.dto.RestaurantResponse;
 import com.fooddelivery.restaurantservice.entity.MenuItem;
 import com.fooddelivery.restaurantservice.entity.Restaurant;
 import com.fooddelivery.restaurantservice.service.AdminRestaurantService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/restaurants")
@@ -19,16 +22,18 @@ public class AdminRestaurantController {
         this.adminRestaurantService = adminRestaurantService;
     }
 
+
     @PostMapping
-    public ResponseEntity<Restaurant> createRestaurant(@RequestBody Restaurant restaurant) {
-        return ResponseEntity.ok(adminRestaurantService.createRestaurant(restaurant));
+    public ResponseEntity<RestaurantResponse> createRestaurant(
+            @RequestBody RestaurantRequest request) {
+        return ResponseEntity.ok(adminRestaurantService.createRestaurant(request));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Restaurant> updateRestaurant(
+    public ResponseEntity<RestaurantResponse> updateRestaurant(
             @PathVariable Long id,
-            @RequestBody Restaurant restaurant) {
-        return ResponseEntity.ok(adminRestaurantService.updateRestaurant(id, restaurant));
+            @RequestBody RestaurantRequest request) {
+        return ResponseEntity.ok(adminRestaurantService.updateRestaurant(id, request));
     }
 
     @DeleteMapping("/{id}")
@@ -37,26 +42,37 @@ public class AdminRestaurantController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping
+    public ResponseEntity<List<RestaurantResponse>> getAllRestaurants() {
+        return ResponseEntity.ok(adminRestaurantService.getAllRestaurants());
+    }
+
 
 
     @PostMapping("/{restaurantId}/menu-items")
-    public ResponseEntity<MenuItem> addMenuItem(
+    public ResponseEntity<MenuItemResponse> addMenuItem(
             @PathVariable Long restaurantId,
-            @RequestBody MenuItem menuItem) {
-        return ResponseEntity.ok(adminRestaurantService.addMenuItem(restaurantId, menuItem));
+            @RequestBody MenuItemRequest request) {
+        return ResponseEntity.ok(adminRestaurantService.addMenuItem(restaurantId, request));
     }
 
     @PutMapping("/menu-items/{itemId}")
-    public ResponseEntity<MenuItem> updateMenuItem(
+    public ResponseEntity<MenuItemResponse> updateMenuItem(
             @PathVariable Long itemId,
-            @RequestBody MenuItem menuItem) {
-        return ResponseEntity.ok(adminRestaurantService.updateMenuItem(itemId, menuItem));
+            @RequestBody MenuItemRequest request) {
+        return ResponseEntity.ok(adminRestaurantService.updateMenuItem(itemId, request));
     }
 
     @DeleteMapping("/menu-items/{itemId}")
     public ResponseEntity<Void> deleteMenuItem(@PathVariable Long itemId) {
         adminRestaurantService.deleteMenuItem(itemId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{restaurantId}/menu-items")
+    public ResponseEntity<List<MenuItemResponse>> getAllMenuItems(
+            @PathVariable Long restaurantId) {
+        return ResponseEntity.ok(adminRestaurantService.getAllMenuItems(restaurantId));
     }
 
 

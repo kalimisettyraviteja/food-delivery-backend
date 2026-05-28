@@ -1,5 +1,7 @@
 package com.fooddelivery.restaurantservice.controller;
 
+import com.fooddelivery.restaurantservice.dto.MenuItemResponse;
+import com.fooddelivery.restaurantservice.dto.RestaurantResponse;
 import com.fooddelivery.restaurantservice.entity.MenuItem;
 import com.fooddelivery.restaurantservice.entity.Restaurant;
 import com.fooddelivery.restaurantservice.service.RestaurantService;
@@ -18,22 +20,24 @@ public class RestaurantController {
         this.restaurantService = restaurantService;
     }
 
+
+
     @GetMapping
-    public ResponseEntity<List<Restaurant>> searchRestaurants(
+    public ResponseEntity<List<RestaurantResponse>> searchRestaurants(
             @RequestParam(required = false) String location,
             @RequestParam(required = false) String cuisine) {
         return ResponseEntity.ok(
-                restaurantService.searchRestaurants(location, cuisine)
-        );
+                restaurantService.searchRestaurants(location, cuisine));
     }
+
 
     // View Menu (+ veg filter)
     @GetMapping("/{restaurantId}/menu")
-    public ResponseEntity<List<MenuItem>> getMenu(
+    public ResponseEntity<List<MenuItemResponse>> getMenu(
             @PathVariable Long restaurantId,
             @RequestParam(required = false) Boolean veg) {
         return ResponseEntity.ok(
-                restaurantService.getMenuForRestaurant(restaurantId, veg)
-        );
+                restaurantService.getAvailableMenuForRestaurant(restaurantId, veg));
     }
+
 }

@@ -28,4 +28,7 @@ public class Restaurant {
     private Double rating;
 
     private Integer deliveryTime;
+
+    @Column(nullable = false)
+    private Boolean isActive = true;
 }
