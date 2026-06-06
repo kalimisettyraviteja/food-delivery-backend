@@ -8,17 +8,38 @@ spring:
     gateway:
       mvc:
         routes:
-          - id: user-service
+          - id: user-service-route
             uri: lb://user-service
             predicates:
               - Path=/api/users/**
-          - id: restaurant-service
+
+          - id: restaurant-public-route
             uri: lb://restaurant-service
             predicates:
-              - Path=/api/restaurants/**,/api/admin/restaurants/**
+              - Path=/api/restaurants/**
 
+          - id: restaurant-admin-route
+            uri: lb://restaurant-service
+            predicates:
+              - Path=/api/admin/restaurants/**
 
+          - id: order-public-route
+            uri: lb://order-service
+            predicates:
+              - Path=/api/orders/**
 
+          - id: order-admin-route
+            uri: lb://order-service
+            predicates:
+              - Path=/api/admin/orders/**
+          - id: coupon-public-route
+            uri: lb://order-service
+            predicates:
+              - Path=/api/coupons/**
+          - id: coupon-admin-route
+            uri: lb://order-service
+            predicates:
+              - Path=/api/admin/coupons/**
 eureka:
   client:
     service-url:
@@ -29,4 +50,3 @@ eureka:
 logging:
   level:
     org.springframework.cloud.gateway: DEBUG
-

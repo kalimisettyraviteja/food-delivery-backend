@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Invalid password");
         }
 
-        String token = jwtUtil.generateToken(user.getEmail(), user.getRole());
+        String token = jwtUtil.generateToken(user.getId(), user.getEmail(), user.getRole());
 
 
         return new LoginResponse(user.getId(), user.getName(), user.getEmail(), user.getRole(),token);
