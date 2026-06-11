@@ -55,6 +55,16 @@ public class RestaurantServiceImpl implements RestaurantService {
                 .toList();
     }
 
+    @Override
+    public void updateRestaurantRating(Long restaurantId, Double rating, Integer ratingCount) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found"));
+
+        restaurant.setRating(rating);
+        restaurant.setRatingCount(ratingCount);
+        restaurantRepository.save(restaurant);
+    }
+
     private RestaurantResponse mapToRestaurantResponse(Restaurant r) {
         return RestaurantResponse.builder()
                 .id(r.getId())
@@ -62,6 +72,7 @@ public class RestaurantServiceImpl implements RestaurantService {
                 .location(r.getLocation())
                 .cuisine(r.getCuisine())
                 .rating(r.getRating())
+                .ratingCount(r.getRatingCount())
                 .deliveryTime(r.getDeliveryTime())
                 .isActive(r.getIsActive())
                 .build();

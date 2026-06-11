@@ -30,4 +30,12 @@ public class User {
 
     @Column(nullable = false)
     private String role;
+
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @Column(name = "profile_photo", columnDefinition = "LONGBLOB")
+    private byte[] profilePhoto;
+
+    @Column(name = "profile_photo_content_type")
+    private String profilePhotoContentType;
 }

@@ -50,8 +50,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         // Step 5 — Extract claims from token
+        Long userId   = jwtUtil.extractUserId(token);
         String email = jwtUtil.extractEmail(token);
         String role = jwtUtil.extractRole(token);
+
+        // Store userId in request attribute so controller can read it
+        request.setAttribute("userId", userId);
+        request.setAttribute("email", email);
+        request.setAttribute("role", role);
 
         // Step 6 — Set Authentication into SecurityContext
         UsernamePasswordAuthenticationToken authentication =

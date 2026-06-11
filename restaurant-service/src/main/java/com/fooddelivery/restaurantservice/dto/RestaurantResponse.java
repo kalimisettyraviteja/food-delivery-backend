@@ -15,6 +15,7 @@ public class RestaurantResponse {
     private String location;
     private String cuisine;
     private Double rating;
+    private Integer ratingCount;
     private Integer deliveryTime;
     private Boolean isActive;
 }

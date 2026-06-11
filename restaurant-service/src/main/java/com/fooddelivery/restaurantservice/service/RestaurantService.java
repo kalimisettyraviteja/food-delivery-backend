@@ -9,4 +9,7 @@ public interface RestaurantService {
     List<RestaurantResponse> searchRestaurants (String location, String cuisine);
 
     List<MenuItemResponse> getAvailableMenuForRestaurant(Long restaurantId, Boolean vegOnly);
+
+    void updateRestaurantRating(Long restaurantId, Double rating, Integer ratingCount);
+
 }

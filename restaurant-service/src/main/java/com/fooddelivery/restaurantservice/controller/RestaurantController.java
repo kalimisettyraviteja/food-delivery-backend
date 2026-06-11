@@ -2,8 +2,7 @@ package com.fooddelivery.restaurantservice.controller;
 
 import com.fooddelivery.restaurantservice.dto.MenuItemResponse;
 import com.fooddelivery.restaurantservice.dto.RestaurantResponse;
-import com.fooddelivery.restaurantservice.entity.MenuItem;
-import com.fooddelivery.restaurantservice.entity.Restaurant;
+import com.fooddelivery.restaurantservice.dto.UpdateRestaurantRatingRequest;
 import com.fooddelivery.restaurantservice.service.RestaurantService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,8 +19,6 @@ public class RestaurantController {
         this.restaurantService = restaurantService;
     }
 
-
-
     @GetMapping
     public ResponseEntity<List<RestaurantResponse>> searchRestaurants(
             @RequestParam(required = false) String location,
@@ -30,8 +27,6 @@ public class RestaurantController {
                 restaurantService.searchRestaurants(location, cuisine));
     }
 
-
-    // View Menu (+ veg filter)
     @GetMapping("/{restaurantId}/menu")
     public ResponseEntity<List<MenuItemResponse>> getMenu(
             @PathVariable Long restaurantId,
@@ -40,4 +35,15 @@ public class RestaurantController {
                 restaurantService.getAvailableMenuForRestaurant(restaurantId, veg));
     }
 
+    @PutMapping("/internal/{restaurantId}/rating")
+    public ResponseEntity<Void> updateRestaurantRating(
+            @PathVariable Long restaurantId,
+            @RequestBody UpdateRestaurantRatingRequest request) {
+        restaurantService.updateRestaurantRating(
+                restaurantId,
+                request.getRating(),
+                request.getRatingCount()
+        );
+        return ResponseEntity.ok().build();
+    }
 }

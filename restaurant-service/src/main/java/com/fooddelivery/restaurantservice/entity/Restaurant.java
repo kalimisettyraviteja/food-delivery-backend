@@ -27,6 +27,8 @@ public class Restaurant {
 
     private Double rating;
 
+    private Integer ratingCount;
+
     private Integer deliveryTime;
 
     @Column(nullable = false)
