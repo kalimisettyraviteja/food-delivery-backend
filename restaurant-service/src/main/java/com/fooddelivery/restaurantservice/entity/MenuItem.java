@@ -29,8 +29,8 @@ public class MenuItem {
     private Double price;
 
     @Lob
-    @Column(columnDefinition = "LONGTEXT")
-    private String image;
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] image;
 
     @Column(nullable = false)
     private Boolean veg;

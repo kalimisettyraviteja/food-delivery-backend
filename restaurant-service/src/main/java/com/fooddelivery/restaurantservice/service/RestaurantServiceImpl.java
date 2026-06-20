@@ -9,6 +9,7 @@ import com.fooddelivery.restaurantservice.repository.MenuItemRepository;
 import com.fooddelivery.restaurantservice.repository.RestaurantRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Base64;
 import java.util.List;
 
 @Service
@@ -75,6 +76,9 @@ public class RestaurantServiceImpl implements RestaurantService {
                 .ratingCount(r.getRatingCount())
                 .deliveryTime(r.getDeliveryTime())
                 .isActive(r.getIsActive())
+                .image(r.getImage() != null
+                        ? "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(r.getImage())
+                        : null)
                 .build();
     }
 
@@ -85,7 +89,9 @@ public class RestaurantServiceImpl implements RestaurantService {
                 .name(m.getName())
                 .description(m.getDescription())
                 .price(m.getPrice())
-                .image(m.getImage())
+                .image(m.getImage() != null
+                        ? "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(m.getImage())
+                        : null)
                 .veg(m.getVeg())
                 .isAvailable(m.getIsAvailable())
                 .build();

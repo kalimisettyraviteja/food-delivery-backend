@@ -3,8 +3,6 @@ package com.fooddelivery.userservice.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -27,17 +25,28 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
         http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/users/register", "/api/users/login").permitAll()
-                        .requestMatchers("/api/users").hasAuthority("ADMIN")
-                        .requestMatchers("/api/users/profile",
-                                "/api/users/profile/change-password").authenticated()
-                        .anyRequest().authenticated()
+                                .requestMatchers(
+                                        "/api/users/auth/email-status",
+                                        "/api/users/register",
+                                        "/api/users/verify-email",
+                                        "/api/users/resend-verification",
+                                        "/api/users/login",
+                                        "/api/users/forgot-password",
+                                        "/api/users/verify-reset-otp",
+                                        "/api/users/reset-password"
+                                ).permitAll()
+                                .requestMatchers("/api/users").hasAuthority("ADMIN")
+                                .requestMatchers(
+                                        "/api/users/profile",
+                                        "/api/users/profile/change-password",
+                                        "/api/users/profile/photo"
+                                ).authenticated()
+                                .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 

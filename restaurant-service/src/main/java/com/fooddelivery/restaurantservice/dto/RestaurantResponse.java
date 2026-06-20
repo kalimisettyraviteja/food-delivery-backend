@@ -18,4 +18,5 @@ public class RestaurantResponse {
     private Integer ratingCount;
     private Integer deliveryTime;
     private Boolean isActive;
+    private String image;
 }

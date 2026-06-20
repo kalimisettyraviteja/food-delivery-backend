@@ -3,14 +3,16 @@ package com.fooddelivery.userservice.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
-@Table(name = "users")
+@Table(name = "pending_registrations")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
+public class PendingRegistration {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,17 +27,6 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Column
-    private String phone;
-
     @Column(nullable = false)
-    private String role;
-
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "profile_photo", columnDefinition = "LONGBLOB")
-    private byte[] profilePhoto;
-
-    @Column(name = "profile_photo_content_type")
-    private String profilePhotoContentType;
+    private LocalDateTime createdAt;
 }

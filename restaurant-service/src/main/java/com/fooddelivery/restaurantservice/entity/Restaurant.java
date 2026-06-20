@@ -33,4 +33,8 @@ public class Restaurant {
 
     @Column(nullable = false)
     private Boolean isActive = true;
+
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] image;
 }

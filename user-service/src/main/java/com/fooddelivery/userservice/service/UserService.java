@@ -8,9 +8,21 @@ import java.util.List;
 
 public interface UserService {
 
-    UserResponse registerUser(RegisterRequest request);
+    EmailStatusResponse checkEmailStatus(String email);
+
+    void registerUser(RegisterRequest request);
+
+    LoginResponse verifyEmailAndLogin(String email, String otp);
+
+    void resendVerificationOtp(String email);
 
     LoginResponse loginUser(LoginRequest request);
+
+    void forgotPassword(String email);
+
+    void verifyResetOtp(String email, String otp);
+
+    void resetPassword(ResetPasswordRequest request);
 
     List<UserResponse> getAllUsers();
 
@@ -25,5 +37,4 @@ public interface UserService {
     ResponseEntity<byte[]> getProfilePhoto(Long userId);
 
     void removeProfilePhoto(Long userId);
-
 }
