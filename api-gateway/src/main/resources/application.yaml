@@ -10,42 +10,42 @@ spring:
       mvc:
         routes:
           - id: user-service-route
-            uri: lb://USER-SERVICE
+            uri: https://user-service-34dd.onrender.com/
             predicates:
               - Path=/api/users/**
 
           - id: restaurant-public-route
-            uri: lb://RESTAURANT-SERVICE
+            uri: https://restaurant-service-i0w7.onrender.com/
             predicates:
               - Path=/api/restaurants/**
 
           - id: restaurant-admin-route
-            uri: lb://RESTAURANT-SERVICE
+            uri: https://restaurant-service-i0w7.onrender.com/
             predicates:
               - Path=/api/admin/restaurants/**
 
           - id: order-public-route
-            uri: lb://ORDER-SERVICE
+            uri: https://order-service-nq9z.onrender.com/
             predicates:
               - Path=/api/orders/**
 
           - id: order-admin-route
-            uri: lb://ORDER-SERVICE
+            uri: https://order-service-nq9z.onrender.com/
             predicates:
               - Path=/api/admin/orders/**
 
           - id: coupon-public-route
-            uri: lb://ORDER-SERVICE
+            uri: https://order-service-nq9z.onrender.com/
             predicates:
               - Path=/api/coupons/**
 
           - id: coupon-admin-route
-            uri: lb://ORDER-SERVICE
+            uri: https://order-service-nq9z.onrender.com/
             predicates:
               - Path=/api/admin/coupons/**
 
           - id: review-route
-            uri: lb://ORDER-SERVICE
+            uri: https://order-service-nq9z.onrender.com/
             predicates:
               - Path=/api/reviews/**
 
