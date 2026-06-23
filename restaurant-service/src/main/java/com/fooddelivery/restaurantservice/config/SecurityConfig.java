@@ -29,6 +29,7 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/ping").permitAll()
                         .requestMatchers("/api/restaurants/*/menu").hasAuthority("USER")
                         .requestMatchers("/api/restaurants/**").permitAll()
                         .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
