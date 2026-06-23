@@ -1,4 +1,4 @@
-package com.cinebook.eurekaserver.controller;
+package com.fooddelivery.orderservice.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
