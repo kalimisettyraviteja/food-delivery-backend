@@ -88,40 +88,12 @@ public class UserServiceImpl implements UserService {
         pendingRegistration.setName(request.getName());
         pendingRegistration.setEmail(request.getEmail());
         pendingRegistration.setPassword(passwordEncoder.encode(request.getPassword()));
-
-        if (pendingRegistration.getCreatedAt() == null) {
-            pendingRegistration.setCreatedAt(LocalDateTime.now());
-        } else {
-            pendingRegistration.setCreatedAt(LocalDateTime.now());
-        }
+        pendingRegistration.setCreatedAt(LocalDateTime.now());
 
         pendingRegistrationRepository.save(pendingRegistration);
 
         sendOtp(request.getEmail(), request.getName(), EMAIL_VERIFICATION);
     }
- /*   @Override
-    @Transactional
-    public void registerUser(RegisterRequest request) {
-        if (!request.getPassword().equals(request.getConfirmPassword())) {
-            throw new RuntimeException("Password and confirm password do not match.");
-        }
-
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("An account with this email already exists.");
-        }
-
-        pendingRegistrationRepository.deleteByEmail(request.getEmail());
-
-        PendingRegistration pendingRegistration = PendingRegistration.builder()
-                .name(request.getName())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        pendingRegistrationRepository.save(pendingRegistration);
-        sendOtp(request.getEmail(), request.getName(), EMAIL_VERIFICATION);
-    }*/
 
     @Override
     @Transactional
