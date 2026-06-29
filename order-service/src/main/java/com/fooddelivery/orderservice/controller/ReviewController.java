@@ -31,7 +31,7 @@ public class ReviewController {
     }
 
     @GetMapping("/orders/{orderId}")
-    public ResponseEntity<ReviewResponse> getReviewByOrderId(
+    public ResponseEntity<?> getReviewByOrderId(
             @PathVariable Long orderId,
             HttpServletRequest httpRequest) {
 
@@ -39,7 +39,9 @@ public class ReviewController {
         ReviewResponse review = reviewService.getReviewByOrderId(orderId, userId);
 
         if (review == null) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(404).body(
+                    java.util.Map.of("message", "No review found for this order")
+            );
         }
 
         return ResponseEntity.ok(review);
