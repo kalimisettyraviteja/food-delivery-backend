@@ -31,18 +31,12 @@ public class ReviewController {
     }
 
     @GetMapping("/orders/{orderId}")
-    public ResponseEntity<?> getReviewByOrderId(
+    public ResponseEntity<ReviewResponse> getReviewByOrderId(
             @PathVariable Long orderId,
             HttpServletRequest httpRequest) {
 
         Long userId = (Long) httpRequest.getAttribute("userId");
         ReviewResponse review = reviewService.getReviewByOrderId(orderId, userId);
-
-        if (review == null) {
-            return ResponseEntity.status(404).body(
-                    java.util.Map.of("message", "No review found for this order")
-            );
-        }
 
         return ResponseEntity.ok(review);
     }
