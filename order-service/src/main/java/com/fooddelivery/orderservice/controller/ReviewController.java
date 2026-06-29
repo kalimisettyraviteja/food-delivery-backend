@@ -36,7 +36,13 @@ public class ReviewController {
             HttpServletRequest httpRequest) {
 
         Long userId = (Long) httpRequest.getAttribute("userId");
-        return ResponseEntity.ok(reviewService.getReviewByOrderId(orderId, userId));
+        ReviewResponse review = reviewService.getReviewByOrderId(orderId, userId);
+
+        if (review == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(review);
     }
 
     @GetMapping("/restaurants/{restaurantId}")
