@@ -16,7 +16,7 @@ public class MenuItemRequest {
     @Positive(message = "Price must be greater than 0")
     private Double price;
 
-    @NotNull(message = "Veg/Non-veg flag is required")
+    @NotNull(message = "Veg/Non-veg flag is required")  
     private Boolean veg;
 
     private Boolean isAvailable = true;

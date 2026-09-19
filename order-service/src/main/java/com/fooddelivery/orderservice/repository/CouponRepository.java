@@ -10,4 +10,14 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
     Optional<Coupon> findByCodeIgnoreCase(String code);
     List<Coupon> findByScopeAndActiveTrue(CouponScope scope);
     List<Coupon> findByScopeAndRestaurantIdAndActiveTrue(CouponScope scope, Long restaurantId);
+
+    List<Coupon> findByScopeAndRestaurantId(
+            CouponScope scope,
+            Long restaurantId
+    );
+
+    List<Coupon> findByScopeAndRestaurantIdIn(
+            CouponScope scope,
+            List<Long> restaurantIds
+    );
 }

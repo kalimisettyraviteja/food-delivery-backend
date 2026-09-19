@@ -1,16 +1,18 @@
 package com.fooddelivery.orderservice.controller;
 
 import com.fooddelivery.orderservice.dto.CreateReviewRequest;
-import com.fooddelivery.orderservice.dto.RestaurantRatingSummaryResponse;
 import com.fooddelivery.orderservice.dto.ReviewResponse;
 import com.fooddelivery.orderservice.service.ReviewService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/reviews")
@@ -22,34 +24,42 @@ public class ReviewController {
     @PostMapping
     public ResponseEntity<ReviewResponse> createReview(
             @Valid @RequestBody CreateReviewRequest request,
-            HttpServletRequest httpRequest) {
-
-        Long userId = (Long) httpRequest.getAttribute("userId");
+            HttpServletRequest httpRequest
+    ) {
+        Long userId = getUserId(httpRequest);
         String email = (String) httpRequest.getAttribute("email");
 
-        return ResponseEntity.ok(reviewService.createReview(userId, email, request));
+        return ResponseEntity.ok(
+                reviewService.createReview(userId, email, request)
+        );
     }
 
+    /**
+     * Customer retrieves only the review linked to their own order.
+     */
     @GetMapping("/orders/{orderId}")
     public ResponseEntity<ReviewResponse> getReviewByOrderId(
             @PathVariable Long orderId,
-            HttpServletRequest httpRequest) {
+            HttpServletRequest httpRequest
+    ) {
+        Long userId = getUserId(httpRequest);
 
-        Long userId = (Long) httpRequest.getAttribute("userId");
-        ReviewResponse review = reviewService.getReviewByOrderId(orderId, userId);
-
-        return ResponseEntity.ok(review);
+        return ResponseEntity.ok(
+                reviewService.getReviewByOrderId(orderId, userId)
+        );
     }
 
-    @GetMapping("/restaurants/{restaurantId}")
-    public ResponseEntity<List<ReviewResponse>> getRestaurantReviews(
-            @PathVariable Long restaurantId) {
-        return ResponseEntity.ok(reviewService.getReviewsByRestaurantId(restaurantId));
-    }
+    private Long getUserId(HttpServletRequest request) {
+        Object userId = request.getAttribute("userId");
 
-    @GetMapping("/restaurants/{restaurantId}/summary")
-    public ResponseEntity<RestaurantRatingSummaryResponse> getRestaurantRatingSummary(
-            @PathVariable Long restaurantId) {
-        return ResponseEntity.ok(reviewService.getRestaurantRatingSummary(restaurantId));
+        if (userId == null) {
+            throw new RuntimeException("Authenticated user ID is missing");
+        }
+
+        if (userId instanceof Long id) {
+            return id;
+        }
+
+        return Long.valueOf(userId.toString());
     }
 }

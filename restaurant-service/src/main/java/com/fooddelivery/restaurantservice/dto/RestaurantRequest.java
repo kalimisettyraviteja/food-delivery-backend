@@ -22,8 +22,16 @@ public class RestaurantRequest {
     @Min(value = 0, message = "Rating count cannot be negative")
     private Integer ratingCount;
 
-    @Min(value = 5, message = "Delivery time must be at least 5 minute's")
-    private Integer deliveryTime;
-
     private Boolean isActive = true;
+
+    @NotNull(message = "Please specify if this is a pure veg restaurant")
+    private Boolean isPureVeg;
+
+    @NotNull(message = "Latitude is required")
+    private Double latitude;
+
+    @NotNull(message = "Longitude is required")
+    private Double longitude;
+
+    private Long managerId;
 }

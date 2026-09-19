@@ -23,6 +23,8 @@ public class AdminRestaurantServiceImpl implements AdminRestaurantService {
     private static final List<String> ALLOWED_CONTENT_TYPES =
             List.of("image/jpeg", "image/png", "image/jpg", "image/webp");
 
+    private static final double DUPLICATE_BRANCH_RADIUS_KM = 0.5;
+
     private final RestaurantRepository restaurantRepository;
     private final MenuItemRepository menuItemRepository;
 
@@ -34,10 +36,8 @@ public class AdminRestaurantServiceImpl implements AdminRestaurantService {
 
     @Override
     public RestaurantResponse createRestaurant(RestaurantRequest request) {
-        restaurantRepository.findByNameIgnoreCaseAndLocationIgnoreCase(request.getName(), request.getLocation())
-                .ifPresent(existing -> {
-                    throw new DuplicateResourceException("Restaurant with same name and location already exists");
-                });
+
+        validateNoDuplicateBranch(request.getName(), request.getLatitude(), request.getLongitude(), null);
 
         Restaurant restaurant = Restaurant.builder()
                 .name(request.getName())
@@ -45,8 +45,11 @@ public class AdminRestaurantServiceImpl implements AdminRestaurantService {
                 .cuisine(request.getCuisine())
                 .rating(request.getRating())
                 .ratingCount(request.getRatingCount())
-                .deliveryTime(request.getDeliveryTime())
                 .isActive(request.getIsActive() != null ? request.getIsActive() : true)
+                .isPureVeg(request.getIsPureVeg() != null ? request.getIsPureVeg() : false)
+                .latitude(request.getLatitude())
+                .longitude(request.getLongitude())
+                .managerId(request.getManagerId())
                 .build();
 
         return mapToRestaurantResponse(restaurantRepository.save(restaurant));
@@ -57,13 +60,18 @@ public class AdminRestaurantServiceImpl implements AdminRestaurantService {
         Restaurant existing = restaurantRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found"));
 
+        validateNoDuplicateBranch(request.getName(), request.getLatitude(), request.getLongitude(), id);
+
         existing.setName(request.getName());
         existing.setLocation(request.getLocation());
         existing.setCuisine(request.getCuisine());
         existing.setRating(request.getRating());
         existing.setRatingCount(request.getRatingCount());
-        existing.setDeliveryTime(request.getDeliveryTime());
         existing.setIsActive(request.getIsActive() != null ? request.getIsActive() : existing.getIsActive());
+        existing.setIsPureVeg(request.getIsPureVeg() != null ? request.getIsPureVeg() : existing.getIsPureVeg());
+        existing.setLatitude(request.getLatitude() != null ? request.getLatitude() : existing.getLatitude());
+        existing.setLongitude(request.getLongitude() != null ? request.getLongitude() : existing.getLongitude());
+        existing.setManagerId(request.getManagerId());
 
         return mapToRestaurantResponse(restaurantRepository.save(existing));
     }
@@ -102,12 +110,16 @@ public class AdminRestaurantServiceImpl implements AdminRestaurantService {
                 .toList();
     }
 
-    //--------------------------------------------------------------------
-
     @Override
     public MenuItemResponse addMenuItem(Long restaurantId, MenuItemRequest request) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found"));
+
+        if (Boolean.TRUE.equals(restaurant.getIsPureVeg()) && Boolean.FALSE.equals(request.getVeg())) {
+            throw new IllegalArgumentException(
+                    "This restaurant is marked Pure Veg. Non-veg menu items are not allowed."
+            );
+        }
 
         MenuItem menuItem = MenuItem.builder()
                 .restaurant(restaurant)
@@ -125,6 +137,12 @@ public class AdminRestaurantServiceImpl implements AdminRestaurantService {
     public MenuItemResponse updateMenuItem(Long itemId, MenuItemRequest request) {
         MenuItem existing = menuItemRepository.findById(itemId)
                 .orElseThrow(() -> new ResourceNotFoundException("Menu item not found"));
+
+        if (Boolean.TRUE.equals(existing.getRestaurant().getIsPureVeg()) && Boolean.FALSE.equals(request.getVeg())) {
+            throw new IllegalArgumentException(
+                    "This restaurant is marked Pure Veg. Non-veg menu items are not allowed."
+            );
+        }
 
         existing.setName(request.getName());
         existing.setDescription(request.getDescription());
@@ -172,6 +190,46 @@ public class AdminRestaurantServiceImpl implements AdminRestaurantService {
                 .toList();
     }
 
+    private void validateNoDuplicateBranch(String name, Double latitude, Double longitude, Long excludeId) {
+        if (name == null || latitude == null || longitude == null) {
+            return;
+        }
+
+        List<Restaurant> sameName = restaurantRepository.findByNameIgnoreCase(name);
+
+        for (Restaurant existing : sameName) {
+            if (excludeId != null && existing.getId().equals(excludeId)) {
+                continue;
+            }
+
+            if (existing.getLatitude() == null || existing.getLongitude() == null) {
+                continue;
+            }
+
+            double distance = calculateHaversineDistance(
+                    latitude, longitude,
+                    existing.getLatitude(), existing.getLongitude()
+            );
+
+            if (distance <= DUPLICATE_BRANCH_RADIUS_KM) {
+                throw new DuplicateResourceException(
+                        "A branch of '" + name + "' already exists within 500 meters of this location."
+                );
+            }
+        }
+    }
+
+    private double calculateHaversineDistance(double lat1, double lon1, double lat2, double lon2) {
+        final double R = 6371;
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+
     private void validateImageFile(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("Image file must not be empty");
@@ -190,8 +248,11 @@ public class AdminRestaurantServiceImpl implements AdminRestaurantService {
                 .cuisine(r.getCuisine())
                 .rating(r.getRating())
                 .ratingCount(r.getRatingCount())
-                .deliveryTime(r.getDeliveryTime())
                 .isActive(r.getIsActive())
+                .isPureVeg(r.getIsPureVeg())
+                .latitude(r.getLatitude())
+                .longitude(r.getLongitude())
+                .managerId(r.getManagerId())
                 .image(r.getImage() != null
                         ? "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(r.getImage())
                         : null)

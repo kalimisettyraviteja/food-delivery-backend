@@ -1,5 +1,7 @@
 package com.fooddelivery.userservice.entity;
 
+import com.fooddelivery.userservice.enums.AccountStatus;
+import com.fooddelivery.userservice.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,8 +30,16 @@ public class User {
     @Column
     private String phone;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String role;
+    private Role role;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AccountStatus accountStatus;
+
+    @Column(nullable = false)
+    private Boolean mustChangePassword = false;
 
     @Lob
     @Basic(fetch = FetchType.LAZY)

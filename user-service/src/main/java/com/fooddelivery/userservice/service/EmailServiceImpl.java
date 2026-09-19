@@ -49,6 +49,108 @@ public class EmailServiceImpl implements EmailService {
         );
     }
 
+    @Override
+    public void sendManagerApprovalCredentials(String toEmail, String name, String temporaryPassword) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("api-key", brevoApiKey);
+            headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+
+            String html = """
+                    <html>
+                    <body style="margin:0; padding:0; background-color:#f8fafc; font-family:Arial, Helvetica, sans-serif;">
+                        <div style="width:100%%; padding:24px 0;">
+                            <div style="max-width:700px; margin:0 auto; background-color:#ffffff; border:1px solid #e2e8f0; border-radius:18px; overflow:hidden;">
+
+                                <div style="padding:34px 28px 22px 28px; text-align:center; border-bottom:1px solid #f1f5f9;">
+                                    <div style="font-size:54px; line-height:54px; margin-bottom:10px;">🛵</div>
+                                    <div style="font-size:56px; line-height:62px; font-weight:900; letter-spacing:-2px; margin:0; color:#0f2f22;">
+                                        Cravy<span style="color:#ff6b1a;">o</span>
+                                    </div>
+                                    <div style="margin-top:10px; font-size:18px; color:#334155; font-style:italic; letter-spacing:0.5px;">
+                                        <span style="color:#ff6b1a; font-weight:700;">—</span>
+                                        Cravings Delivery
+                                        <span style="color:#ff6b1a; font-weight:700;">—</span>
+                                    </div>
+                                </div>
+
+                                <div style="padding:32px 28px; text-align:center;">
+                                    <div style="display:inline-block; background-color:#fff7ed; color:#ea580c; font-size:12px; font-weight:800; letter-spacing:2px; padding:8px 14px; border-radius:999px; margin-bottom:18px;">
+                                        RESTAURANT MANAGER APPROVAL
+                                    </div>
+
+                                    <h1 style="margin:0 0 12px 0; color:#0f172a; font-size:30px; line-height:38px; font-weight:900;">
+                                        Your manager account is approved
+                                    </h1>
+
+                                    <p style="margin:0 0 10px 0; color:#334155; font-size:17px; line-height:28px;">
+                                        Hi <strong>%s</strong>,
+                                    </p>
+
+                                    <p style="margin:0 0 20px 0; color:#475569; font-size:16px; line-height:26px;">
+                                        Your Cravyo restaurant manager account has been approved by admin.
+                                    </p>
+
+                                    <div style="margin:0 auto 20px auto; max-width:420px; background-color:#fff7ed; border:1px solid #fdba74; border-radius:16px; padding:18px 22px; text-align:left;">
+                                        <div style="font-size:13px; color:#9a3412; letter-spacing:1px; font-weight:800; margin-bottom:10px;">
+                                            LOGIN DETAILS
+                                        </div>
+                                        <p style="margin:0 0 8px 0; color:#0f172a; font-size:15px;"><strong>Email:</strong> %s</p>
+                                        <p style="margin:0; color:#0f172a; font-size:15px;"><strong>Temporary Password:</strong> %s</p>
+                                    </div>
+
+                                    <div style="margin:0 0 22px 0; background-color:#fef2f2; border:1px solid #fca5a5; color:#dc2626; padding:14px 18px; border-radius:12px; font-size:15px; font-weight:800; line-height:24px;">
+                                        Please log in and change your password immediately.
+                                    </div>
+
+                                    <p style="margin:0 0 8px 0; color:#64748b; font-size:14px; line-height:24px;">
+                                        For your security, this password should be changed on first login.
+                                    </p>
+                                </div>
+
+                                <div style="padding:18px 24px; text-align:center; background-color:#f8fafc; border-top:1px solid #e2e8f0;">
+                                    <p style="margin:0; color:#94a3b8; font-size:13px; letter-spacing:1px;">
+                                        CRAVYO TEAM
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </body>
+                    </html>
+                    """.formatted(name, toEmail, temporaryPassword);
+
+            Map<String, Object> payload = Map.of(
+                    "sender", Map.of(
+                            "name", senderName,
+                            "email", fromEmail
+                    ),
+                    "to", List.of(
+                            Map.of(
+                                    "email", toEmail,
+                                    "name", name
+                            )
+                    ),
+                    "subject", "Cravyo - Restaurant Manager Account Approved",
+                    "htmlContent", html
+            );
+
+            HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
+            ResponseEntity<String> response = restTemplate.postForEntity(brevoApiUrl, request, String.class);
+
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                log.error("Brevo manager email failed. Status: {}, Body: {}", response.getStatusCode(), response.getBody());
+                throw new RuntimeException("Failed to send email.");
+            }
+
+            log.info("Manager approval email sent successfully to {}", toEmail);
+
+        } catch (Exception e) {
+            log.error("Manager approval email failed for {}: {}", toEmail, e.getMessage(), e);
+            throw new RuntimeException("Failed to send email.");
+        }
+    }
+
     private void sendOtpMail(String toEmail, String name, String otp, String subject, String title) {
         try {
             HttpHeaders headers = new HttpHeaders();
@@ -177,5 +279,28 @@ public class EmailServiceImpl implements EmailService {
             log.error("Brevo email send failed for {}: {}", toEmail, e.getMessage(), e);
             throw new RuntimeException("Failed to send email.");
         }
+    }
+
+
+    @Override
+    public void sendDeactivationOtp(String toEmail, String name, String otp) {
+        sendOtpMail(
+                toEmail,
+                name,
+                otp,
+                "Cravyo - Confirm Account Deactivation",
+                "CONFIRM ACCOUNT DEACTIVATION"
+        );
+    }
+
+    @Override
+    public void sendReactivationOtp(String toEmail, String name, String otp) {
+        sendOtpMail(
+                toEmail,
+                name,
+                otp,
+                "Cravyo - Reactivate Your Account",
+                "REACTIVATE YOUR ACCOUNT"
+        );
     }
 }

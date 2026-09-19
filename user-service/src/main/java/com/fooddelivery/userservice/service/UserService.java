@@ -1,6 +1,7 @@
 package com.fooddelivery.userservice.service;
 
 import com.fooddelivery.userservice.dto.*;
+import com.fooddelivery.userservice.enums.ManagerRegistrationStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,6 +27,16 @@ public interface UserService {
 
     List<UserResponse> getAllUsers();
 
+    List<UserResponse> getApprovedManagers();
+
+    void submitManagerRegistrationRequest(ManagerRegistrationSubmitRequest request);
+
+    List<ManagerRegistrationResponse> getManagerRegistrationRequests(ManagerRegistrationStatus status);
+
+    ManagerRegistrationResponse approveManagerRegistration(Long requestId);
+
+    ManagerRegistrationResponse rejectManagerRegistration(Long requestId, ManagerRegistrationDecisionRequest request);
+
     UserResponse getProfile(Long userId);
 
     UserResponse updateProfile(Long userId, UpdateProfileRequest request);
@@ -37,4 +48,25 @@ public interface UserService {
     ResponseEntity<byte[]> getProfilePhoto(Long userId);
 
     void removeProfilePhoto(Long userId);
+
+    List<SavedAddressResponse> getMyAddresses(Long userId);
+
+    SavedAddressResponse getDefaultAddress(Long userId);
+
+    SavedAddressResponse addAddress(Long userId, SavedAddressRequest request);
+
+    SavedAddressResponse updateAddress(Long userId, Long addressId, SavedAddressRequest request);
+
+    SavedAddressResponse setDefaultAddress(Long userId, Long addressId);
+
+    void deleteAddress(Long userId, Long addressId);
+
+    void requestAccountDeactivation(Long userId);
+
+    void confirmAccountDeactivation(Long userId, String otp);
+
+    void requestAccountReactivation(String email);
+
+    LoginResponse confirmAccountReactivation(String email, String otp);
+
 }
