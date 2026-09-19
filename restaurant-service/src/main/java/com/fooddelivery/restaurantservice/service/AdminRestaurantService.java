@@ -24,5 +24,4 @@ public interface AdminRestaurantService {
     List<MenuItemResponse> getAllMenuItems(Long restaurantId);
     MenuItemResponse updateMenuItemImage(Long itemId, MultipartFile image) throws IOException;
     void deleteMenuItemImage(Long itemId);
-
 }

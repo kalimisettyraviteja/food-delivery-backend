@@ -1,0 +1,46 @@
+package com.fooddelivery.orderservice.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import lombok.*;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class UpdateOrderAddressRequest {
+
+    private Long addressId;
+    private String label;
+    private String customLabel;
+
+    @NotBlank(message = "Receiver name is required")
+    private String receiverName;
+
+    @NotBlank(message = "Phone number is required")
+    @Pattern(regexp = "^[6-9]\\d{9}$", message = "Enter a valid 10-digit phone number")
+    private String phoneNumber;
+
+    @NotBlank(message = "Address line 1 is required")
+    private String addressLine1;
+
+    private String addressLine2;
+    private String landmark;
+
+    @NotBlank(message = "City is required")
+    private String city;
+
+    @NotBlank(message = "State is required")
+    private String state;
+
+    @NotBlank(message = "Postal code is required")
+    private String postalCode;
+
+    @NotNull(message = "Latitude is required")
+    private Double latitude;
+
+    @NotNull(message = "Longitude is required")
+    private Double longitude;
+}

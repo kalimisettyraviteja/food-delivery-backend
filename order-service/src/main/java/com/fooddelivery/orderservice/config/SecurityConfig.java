@@ -25,6 +25,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/orders/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/reviews/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        //.requestMatchers("/api/manager/orders/**").hasRole("RESTAURANT_MANAGER")
+                        .requestMatchers("/api/manager/orders/**").hasRole("RESTAURANT_MANAGER")
+                        .requestMatchers("/api/manager/reviews/**").hasRole("RESTAURANT_MANAGER")
+                        .requestMatchers("/api/manager/coupons/**") .hasRole("RESTAURANT_MANAGER")
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

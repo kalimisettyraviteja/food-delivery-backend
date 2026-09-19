@@ -18,7 +18,6 @@ public class OrderItem {
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    // Snapshot of menu item at time of order
     @Column(nullable = false)
     private Long menuItemId;
 

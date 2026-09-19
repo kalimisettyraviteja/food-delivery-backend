@@ -61,9 +61,6 @@ public class AdminRestaurantController {
         return ResponseEntity.noContent().build();
     }
 
-
-    //------------------------------------------------------------------
-
     @PostMapping("/{restaurantId}/menu-items")
     public ResponseEntity<MenuItemResponse> addMenuItem(
             @PathVariable Long restaurantId,

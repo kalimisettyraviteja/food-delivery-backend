@@ -11,12 +11,14 @@ import com.fooddelivery.orderservice.enums.OrderStatus;
 import com.fooddelivery.orderservice.repository.OrderRepository;
 import com.fooddelivery.orderservice.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewRepository reviewRepository;
@@ -51,15 +53,22 @@ public class ReviewServiceImpl implements ReviewService {
 
         Review saved = reviewRepository.save(review);
 
-        syncRestaurantRating(order.getRestaurantId());
+        try {
+            syncRestaurantRating(order.getRestaurantId());
+        } catch (Exception ex) {
+            log.error("Failed to sync restaurant rating for restaurantId={}. Review saved successfully.", order.getRestaurantId(), ex);
+        }
 
         return map(saved);
     }
 
     @Override
     public ReviewResponse getReviewByOrderId(Long orderId, Long userId) {
-        Review review = reviewRepository.findByOrderId(orderId)
-                .orElseThrow(() -> new RuntimeException("Review not found"));
+        Review review = reviewRepository.findByOrderId(orderId).orElse(null);
+
+        if (review == null) {
+            return null;
+        }
 
         if (!review.getUserId().equals(userId)) {
             throw new RuntimeException("Access denied");

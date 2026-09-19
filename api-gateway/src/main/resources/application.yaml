@@ -9,45 +9,107 @@ spring:
     gateway:
       mvc:
         routes:
+
+          # ------------------------------------------
+          # User service
+          # ------------------------------------------
           - id: user-service-route
             uri: https://user-service-34dd.onrender.com/
             predicates:
               - Path=/api/users/**
 
+          # ------------------------------------------
+          # Restaurant service - public APIs
+          # ------------------------------------------
           - id: restaurant-public-route
             uri: https://restaurant-service-i0w7.onrender.com/
             predicates:
               - Path=/api/restaurants/**
 
+          # ------------------------------------------
+          # Restaurant service - admin APIs
+          # ------------------------------------------
           - id: restaurant-admin-route
             uri: https://restaurant-service-i0w7.onrender.com/
             predicates:
               - Path=/api/admin/restaurants/**
 
+          # ------------------------------------------
+          # Order service - customer order APIs
+          # ------------------------------------------
           - id: order-public-route
             uri: https://order-service-nq9z.onrender.com/
             predicates:
               - Path=/api/orders/**
 
+          # ------------------------------------------
+          # Order service - admin order APIs
+          # ------------------------------------------
           - id: order-admin-route
             uri: https://order-service-nq9z.onrender.com/
             predicates:
               - Path=/api/admin/orders/**
 
+          # ------------------------------------------
+          # Order service - customer coupon APIs
+          # ------------------------------------------
           - id: coupon-public-route
             uri: https://order-service-nq9z.onrender.com/
             predicates:
               - Path=/api/coupons/**
 
+          # ------------------------------------------
+          # Order service - admin coupon APIs
+          # ------------------------------------------
           - id: coupon-admin-route
             uri: https://order-service-nq9z.onrender.com/
             predicates:
               - Path=/api/admin/coupons/**
 
+          # ------------------------------------------
+          # Order service - customer/public review APIs
+          # ------------------------------------------
           - id: review-route
             uri: https://order-service-nq9z.onrender.com/
             predicates:
               - Path=/api/reviews/**
+
+          # ------------------------------------------
+          # Order service - restaurant manager orders
+          # Must be before /api/manager/**
+          # ------------------------------------------
+          - id: manager-orders-route
+            uri: https://order-service-nq9z.onrender.com/
+            predicates:
+              - Path=/api/manager/orders/**
+
+          # ------------------------------------------
+          # Order service - restaurant manager reviews
+          # Must be before /api/manager/**
+          # ------------------------------------------
+          - id: manager-reviews-route
+            uri: https://order-service-nq9z.onrender.com/
+            predicates:
+              - Path=/api/manager/reviews/**
+
+          # ------------------------------------------
+          # Order service - restaurant manager coupons
+          # Must be before /api/manager/**
+          # ------------------------------------------
+          - id: manager-coupons-route
+            uri: https://order-service-nq9z.onrender.com/
+            predicates:
+              - Path=/api/manager/coupons/**
+
+          # ------------------------------------------
+          # Restaurant service - manager restaurants,
+          # menu items, dashboard, and internal APIs.
+          # Kept last because it is the broad manager route.
+          # ------------------------------------------
+          - id: manager-restaurant-route
+            uri: https://restaurant-service-i0w7.onrender.com/
+            predicates:
+              - Path=/api/manager/**
 
 eureka:
   client:

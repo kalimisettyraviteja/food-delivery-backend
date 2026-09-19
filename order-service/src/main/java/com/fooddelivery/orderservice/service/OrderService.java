@@ -1,9 +1,6 @@
 package com.fooddelivery.orderservice.service;
 
-import com.fooddelivery.orderservice.dto.PlaceOrderRequest;
-import com.fooddelivery.orderservice.dto.UpdateOrderStatusRequest;
-import com.fooddelivery.orderservice.dto.OrderResponse;
-import com.fooddelivery.orderservice.dto.OrderSummaryResponse;
+import com.fooddelivery.orderservice.dto.*;
 import java.util.List;
 
 public interface OrderService {
@@ -12,4 +9,10 @@ public interface OrderService {
     OrderResponse getOrderById(Long orderId, Long userId);
     List<OrderSummaryResponse> getAllOrders();
     OrderResponse updateOrderStatus(Long orderId, UpdateOrderStatusRequest request);
+
+    OrderResponse cancelOrder(Long orderId, Long userId, CancelOrderRequest request);
+    OrderResponse updateOrderAddress(Long orderId, Long userId, UpdateOrderAddressRequest request);
+    OrderResponse updateOrderContact(Long orderId, Long userId, UpdateOrderContactRequest request);
+    OrderResponse updateOrderInstructions(Long orderId, Long userId, UpdateOrderInstructionsRequest request);
+
 }

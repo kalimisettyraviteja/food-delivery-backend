@@ -1,6 +1,5 @@
 package com.fooddelivery.restaurantservice.config;
 
-
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +18,7 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-        public String extractEmail(String token) {
+    public String extractEmail(String token) {
         return parseClaims(token).getSubject();
     }
 
@@ -27,13 +26,27 @@ public class JwtUtil {
         return parseClaims(token).get("role", String.class);
     }
 
+//    public Long extractUserId(String token) {
+//        Object userId = parseClaims(token).get("userId");
+//        if (userId == null) {
+//            return null;
+//        }
+//        if (userId instanceof Integer) {
+//            return ((Integer) userId).longValue();
+//        }
+//        return Long.valueOf(userId.toString());
+//    }
+
+    public Long extractUserId(String token) {
+        return parseClaims(token).get("userId", Long.class);
+    }
 
     public boolean validateToken(String token) {
         try {
             parseClaims(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
-            return false;// ← expired token throws ExpiredJwtException
+            return false;
         }
     }
 
@@ -45,44 +58,3 @@ public class JwtUtil {
                 .getBody();
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-| Method                     | What it does                                  | Used where              |
-| -------------------------- | --------------------------------------------- | ----------------------- |
-| getSigningKey()            | Converts secret string to secure Key object   | Internally              |
-| generateToken(email, role) | Creates JWT token with email + role inside    | After login/register    |
-| extractEmail(token)        | Reads email from token                        | Security filter         |
-| extractRole(token)         | Reads role from token                         | Authorization checks    |
-| validateToken(token)       | Checks if token is valid and not expired      | Every protected request |
-| parseClaims(token)         | Decodes the token and returns all data inside | Internally              |
- */

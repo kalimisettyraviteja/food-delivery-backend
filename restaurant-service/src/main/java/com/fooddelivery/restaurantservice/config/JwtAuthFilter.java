@@ -21,6 +21,7 @@ import java.util.List;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    //private final UserRepository userRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -47,21 +48,25 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         // Step 5 — Extract claims from token
+        Long userId = jwtUtil.extractUserId(token);
         String email = jwtUtil.extractEmail(token);
         String role = jwtUtil.extractRole(token);
 
-        // Step 6 — Set Authentication into SecurityContext
-        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(
-                            email,
-                            null,
-                            List.of(new SimpleGrantedAuthority(role))
-                    );
+        // Store userId in request attribute so controller can read it
+        request.setAttribute("userId", userId);
+        request.setAttribute("email", email);
+        request.setAttribute("role", role);
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            log.info("✅ JWT authenticated → {} | Role → {}", email, role);
-        }
+        // Step 6 — Set Authentication into SecurityContext
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(
+                        email,
+                        null,
+                        List.of(new SimpleGrantedAuthority(role))
+                );
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        log.info("✅ JWT authenticated → {} | Role → {}", email, role);
 
         // Step 7 — Continue the request
         filterChain.doFilter(request, response);

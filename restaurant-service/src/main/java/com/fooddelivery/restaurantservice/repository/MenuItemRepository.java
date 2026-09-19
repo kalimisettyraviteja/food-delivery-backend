@@ -5,6 +5,7 @@ import com.fooddelivery.restaurantservice.entity.Restaurant;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MenuItemRepository extends JpaRepository<MenuItem, Long> {
 
@@ -15,4 +16,6 @@ public interface MenuItemRepository extends JpaRepository<MenuItem, Long> {
     List<MenuItem> findByRestaurantAndIsAvailableTrue(Restaurant restaurant);
 
     List<MenuItem> findByRestaurantAndIsAvailableTrueAndVeg(Restaurant restaurant, Boolean veg);
+
+    Optional<MenuItem> findByIdAndRestaurantId(Long id, Long restaurantId);
 }

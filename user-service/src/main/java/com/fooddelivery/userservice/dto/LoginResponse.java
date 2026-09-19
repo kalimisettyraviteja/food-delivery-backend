@@ -11,4 +11,5 @@ public class LoginResponse {
     private String email;
     private String role;
     private String token;
+    private Boolean mustChangePassword;
 }

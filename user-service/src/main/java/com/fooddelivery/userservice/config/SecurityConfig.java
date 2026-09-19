@@ -30,24 +30,36 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                                .requestMatchers(
-                                        "/ping",
-                                        "/api/users/auth/email-status",
-                                        "/api/users/register",
-                                        "/api/users/verify-email",
-                                        "/api/users/resend-verification",
-                                        "/api/users/login",
-                                        "/api/users/forgot-password",
-                                        "/api/users/verify-reset-otp",
-                                        "/api/users/reset-password"
-                                ).permitAll()
-                                .requestMatchers("/api/users").hasAuthority("ADMIN")
-                                .requestMatchers(
-                                        "/api/users/profile",
-                                        "/api/users/profile/change-password",
-                                        "/api/users/profile/photo"
-                                ).authenticated()
-                                .anyRequest().authenticated()
+                        .requestMatchers(
+                                "/ping",
+                                "/api/users/auth/email-status",
+                                "/api/users/register",
+                                "/api/users/manager/register-request",
+                                "/api/users/verify-email",
+                                "/api/users/resend-verification",
+                                "/api/users/login",
+                                "/api/users/forgot-password",
+                                "/api/users/verify-reset-otp",
+                                "/api/users/reset-password",
+                                "/api/users/reactivate/request",
+                                "/api/users/reactivate/confirm"
+                        ).permitAll()
+                        .requestMatchers(
+                                "/api/users",
+                                "/api/users/managers",
+                                "/api/users/manager-requests",
+                                "/api/users/manager-requests/**"
+                        ).hasAuthority("ADMIN")
+                        .requestMatchers(
+                                "/api/users/profile",
+                                "/api/users/profile/change-password",
+                                "/api/users/profile/photo",
+                                "/api/users/profile/deactivate/request",
+                                "/api/users/profile/deactivate/confirm",
+                                "/api/users/addresses",
+                                "/api/users/addresses/**"
+                        ).authenticated()
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 

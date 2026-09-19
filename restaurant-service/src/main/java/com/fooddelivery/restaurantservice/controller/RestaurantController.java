@@ -2,8 +2,10 @@ package com.fooddelivery.restaurantservice.controller;
 
 import com.fooddelivery.restaurantservice.dto.MenuItemResponse;
 import com.fooddelivery.restaurantservice.dto.RestaurantResponse;
+import com.fooddelivery.restaurantservice.dto.RestaurantSearchRequest;
 import com.fooddelivery.restaurantservice.dto.UpdateRestaurantRatingRequest;
 import com.fooddelivery.restaurantservice.service.RestaurantService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,12 +21,25 @@ public class RestaurantController {
         this.restaurantService = restaurantService;
     }
 
-    @GetMapping
+    @PostMapping("/search")
     public ResponseEntity<List<RestaurantResponse>> searchRestaurants(
-            @RequestParam(required = false) String location,
-            @RequestParam(required = false) String cuisine) {
-        return ResponseEntity.ok(
-                restaurantService.searchRestaurants(location, cuisine));
+            @RequestBody(required = false) RestaurantSearchRequest request) {
+
+        RestaurantSearchRequest req = request != null ? request : new RestaurantSearchRequest();
+        List<RestaurantResponse> result = restaurantService.searchRestaurants(
+                req.getLocation(),
+                req.getCuisine(),
+                req.getLat(),
+                req.getLng(),
+                req.getPureVegOnly()
+        );
+
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/{restaurantId}")
+    public ResponseEntity<RestaurantResponse> getRestaurantById(@PathVariable Long restaurantId) {
+        return ResponseEntity.ok(restaurantService.getRestaurantById(restaurantId));
     }
 
     @GetMapping("/{restaurantId}/menu")

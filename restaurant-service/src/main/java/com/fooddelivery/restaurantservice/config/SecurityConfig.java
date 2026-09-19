@@ -30,9 +30,13 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/ping").permitAll()
-                        .requestMatchers("/api/restaurants/*/menu").hasAuthority("USER")
-                        .requestMatchers("/api/restaurants/**").permitAll()
+                        .requestMatchers("/api/restaurants/*/menu").permitAll()
+                        .requestMatchers("/api/restaurants/search").permitAll()
+                        .requestMatchers("/api/restaurants/{restaurantId}").permitAll()
+                        // Internal read-only endpoint called by order-service through Feign.
+                        .requestMatchers("/api/manager/internal/**").permitAll()
                         .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/manager/**").hasAuthority("RESTAURANT_MANAGER")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

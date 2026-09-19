@@ -16,7 +16,12 @@ public class RestaurantResponse {
     private String cuisine;
     private Double rating;
     private Integer ratingCount;
-    private Integer deliveryTime;
     private Boolean isActive;
+    private Boolean isPureVeg;
     private String image;
+    private Double latitude;
+    private Double longitude;
+    private Long managerId;
+    private Double distanceKm;
+    private Integer estimatedMinutes;
 }

@@ -1,8 +1,6 @@
 package com.fooddelivery.orderservice.controller;
 
-import com.fooddelivery.orderservice.dto.PlaceOrderRequest;
-import com.fooddelivery.orderservice.dto.OrderResponse;
-import com.fooddelivery.orderservice.dto.OrderSummaryResponse;
+import com.fooddelivery.orderservice.dto.*;
 import com.fooddelivery.orderservice.service.OrderService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -42,5 +40,45 @@ public class OrderController {
             HttpServletRequest httpRequest) {
         Long userId = (Long) httpRequest.getAttribute("userId");
         return ResponseEntity.ok(orderService.getOrderById(id, userId));
+    }
+
+    // ─── NEW: cancel order ───
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<OrderResponse> cancelOrder(
+            @PathVariable Long id,
+            @Valid @RequestBody CancelOrderRequest request,
+            HttpServletRequest httpRequest) {
+        Long userId = (Long) httpRequest.getAttribute("userId");
+        return ResponseEntity.ok(orderService.cancelOrder(id, userId, request));
+    }
+
+    // ─── NEW: update delivery address ───
+    @PatchMapping("/{id}/address")
+    public ResponseEntity<OrderResponse> updateOrderAddress(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateOrderAddressRequest request,
+            HttpServletRequest httpRequest) {
+        Long userId = (Long) httpRequest.getAttribute("userId");
+        return ResponseEntity.ok(orderService.updateOrderAddress(id, userId, request));
+    }
+
+    // ─── NEW: update receiver name + phone number ───
+    @PatchMapping("/{id}/contact")
+    public ResponseEntity<OrderResponse> updateOrderContact(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateOrderContactRequest request,
+            HttpServletRequest httpRequest) {
+        Long userId = (Long) httpRequest.getAttribute("userId");
+        return ResponseEntity.ok(orderService.updateOrderContact(id, userId, request));
+    }
+
+    // ─── NEW: update cooking instructions ───
+    @PatchMapping("/{id}/instructions")
+    public ResponseEntity<OrderResponse> updateOrderInstructions(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateOrderInstructionsRequest request,
+            HttpServletRequest httpRequest) {
+        Long userId = (Long) httpRequest.getAttribute("userId");
+        return ResponseEntity.ok(orderService.updateOrderInstructions(id, userId, request));
     }
 }
